@@ -6,6 +6,7 @@ class ShoreSquadApp {
         this.init();
         this.setupEventListeners();
         this.loadData();
+        this.enhancedInit();
     }
 
     init() {
@@ -52,6 +53,11 @@ class ShoreSquadApp {
 
         document.getElementById('createEventBtn')?.addEventListener('click', () => {
             this.showModal('Create Event', 'Organize your own beach cleanup and invite your crew to join!');
+        });
+
+        // Floating Action Button
+        document.getElementById('quickActionBtn')?.addEventListener('click', () => {
+            this.showQuickActionsMenu();
         });
 
         // Scroll animations
@@ -502,6 +508,396 @@ class ShoreSquadApp {
             });
             
             document.body.appendChild(installBtn);
+        });
+    }
+
+    // Notification system
+    showToast(message, type = 'success', duration = 3000) {
+        const toast = document.createElement('div');
+        toast.className = `toast toast-${type}`;
+        toast.innerHTML = `
+            ${message}
+            <button class="toast-close" onclick="this.parentElement.remove()">&times;</button>
+        `;
+        
+        document.body.appendChild(toast);
+        
+        setTimeout(() => {
+            toast.classList.add('show');
+        }, 100);
+        
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => {
+                toast.remove();
+            }, 300);
+        }, duration);
+    }
+
+    // Enhanced location services
+    async getNearbyEvents(lat, lng, radius = 25) {
+        try {
+            // In a real app, this would call your API
+            const mockNearbyEvents = [
+                {
+                    id: 1,
+                    title: 'Local Beach Cleanup',
+                    distance: Math.random() * radius,
+                    participants: Math.floor(Math.random() * 50) + 5
+                }
+            ];
+            
+            return mockNearbyEvents.sort((a, b) => a.distance - b.distance);
+        } catch (error) {
+            console.error('Error fetching nearby events:', error);
+            return [];
+        }
+    }
+
+    // Social sharing functionality
+    shareEvent(eventTitle, eventUrl = window.location.href) {
+        if (navigator.share) {
+            navigator.share({
+                title: `Join me at ${eventTitle}`,
+                text: 'Let\'s clean our beaches together with ShoreSquad!',
+                url: eventUrl
+            }).catch(err => console.log('Error sharing:', err));
+        } else {
+            // Fallback to clipboard
+            navigator.clipboard.writeText(`Check out ${eventTitle} on ShoreSquad: ${eventUrl}`)
+                .then(() => {
+                    this.showToast('Event link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.log('Error copying to clipboard:', err);
+                });
+        }
+    }
+
+    // Enhanced crew management
+    updateCrewStats() {
+        const stats = this.calculateCrewStats();
+        
+        document.querySelectorAll('.stat-card h3').forEach((element, index) => {
+            const targetValue = [stats.members, stats.bags, stats.events][index];
+            this.animateNumber(element, 0, targetValue, 1500);
+        });
+    }
+
+    calculateCrewStats() {
+        // In a real app, this would fetch from your API
+        return {
+            members: 12 + Math.floor(Math.random() * 5),
+            bags: 47 + Math.floor(Math.random() * 10),
+            events: 8 + Math.floor(Math.random() * 3)
+        };
+    }
+
+    animateNumber(element, start, end, duration) {
+        const range = end - start;
+        const increment = end > start ? 1 : -1;
+        const stepTime = Math.abs(Math.floor(duration / range));
+        let current = start;
+        
+        const timer = setInterval(() => {
+            current += increment;
+            element.textContent = current;
+            
+            if (current === end) {
+                clearInterval(timer);
+            }
+        }, stepTime);
+    }
+
+    // Enhanced weather features
+    async getExtendedWeatherData() {
+        try {
+            const baseWeather = await this.fetchWeatherData();
+            
+            // Add additional weather metrics useful for beach cleanups
+            return {
+                ...baseWeather,
+                uvIndex: Math.floor(Math.random() * 11),
+                windSpeed: Math.floor(Math.random() * 20) + 5,
+                visibility: Math.floor(Math.random() * 10) + 1,
+                airQuality: ['Good', 'Moderate', 'Unhealthy for Sensitive Groups'][Math.floor(Math.random() * 3)],
+                tideInfo: {
+                    high: '12:30 PM',
+                    low: '6:45 PM'
+                }
+            };
+        } catch (error) {
+            console.error('Extended weather fetch error:', error);
+            return this.generateMockWeather();
+        }
+    }
+
+    // Gamification features
+    checkAchievements() {
+        const achievements = [
+            { id: 'first_cleanup', name: 'First Cleanup', description: 'Completed your first beach cleanup!' },
+            { id: 'team_builder', name: 'Team Builder', description: 'Recruited 5 crew members!' },
+            { id: 'weather_tracker', name: 'Weather Tracker', description: 'Checked weather 10 times!' },
+            { id: 'eco_warrior', name: 'Eco Warrior', description: 'Collected 100 bags of trash!' }
+        ];
+        
+        // Check achievement criteria (in real app, check against user data)
+        const earned = achievements.filter(achievement => Math.random() > 0.7);
+        
+        earned.forEach(achievement => {
+            this.showAchievement(achievement);
+        });
+    }
+
+    showAchievement(achievement) {
+        const achievementElement = document.createElement('div');
+        achievementElement.className = 'achievement-popup';
+        achievementElement.innerHTML = `
+            <div class="achievement-content">
+                <div class="achievement-icon">🏆</div>
+                <div class="achievement-text">
+                    <h4>Achievement Unlocked!</h4>
+                    <h3>${achievement.name}</h3>
+                    <p>${achievement.description}</p>
+                </div>
+            </div>
+        `;
+        
+        // Add achievement styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .achievement-popup {
+                position: fixed;
+                top: 50%;
+                left: 50%;
+                transform: translate(-50%, -50%) scale(0);
+                background: linear-gradient(135deg, var(--energy-orange), #e55a2b);
+                color: var(--clean-white);
+                padding: var(--spacing-lg);
+                border-radius: var(--border-radius-xl);
+                box-shadow: var(--shadow-lg);
+                z-index: 3000;
+                text-align: center;
+                animation: achievementPop 3s ease-out forwards;
+            }
+            
+            .achievement-content {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-md);
+            }
+            
+            .achievement-icon {
+                font-size: 3rem;
+            }
+            
+            .achievement-text h4 {
+                margin: 0 0 var(--spacing-xs) 0;
+                font-size: var(--font-size-sm);
+                opacity: 0.9;
+            }
+            
+            .achievement-text h3 {
+                margin: 0 0 var(--spacing-xs) 0;
+                font-size: var(--font-size-xl);
+            }
+            
+            .achievement-text p {
+                margin: 0;
+                font-size: var(--font-size-sm);
+                opacity: 0.8;
+            }
+            
+            @keyframes achievementPop {
+                0% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+                20% { transform: translate(-50%, -50%) scale(1.1); opacity: 1; }
+                25% { transform: translate(-50%, -50%) scale(1); }
+                75% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+                100% { transform: translate(-50%, -50%) scale(0); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(achievementElement);
+        
+        setTimeout(() => {
+            achievementElement.remove();
+            style.remove();
+        }, 3000);
+    }
+
+    // Enhanced accessibility features
+    setupAccessibility() {
+        // Keyboard navigation
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Tab') {
+                document.body.classList.add('keyboard-navigation');
+            }
+            
+            if (e.key === 'Escape') {
+                this.closeModal();
+            }
+        });
+        
+        // Mouse interaction
+        document.addEventListener('mousedown', () => {
+            document.body.classList.remove('keyboard-navigation');
+        });
+        
+        // Reduced motion preference
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            document.documentElement.style.setProperty('--transition-fast', '0ms');
+            document.documentElement.style.setProperty('--transition-normal', '0ms');
+            document.documentElement.style.setProperty('--transition-slow', '0ms');
+        }
+        
+        // High contrast preference
+        if (window.matchMedia('(prefers-contrast: high)').matches) {
+            document.body.classList.add('high-contrast');
+        }
+    }
+
+    // Analytics tracking (privacy-focused)
+    trackEvent(eventName, properties = {}) {
+        // In a real app, you might use a privacy-focused analytics service
+        console.log(`Event tracked: ${eventName}`, properties);
+        
+        // Store locally for insights (respecting privacy)
+        const analytics = JSON.parse(localStorage.getItem('shoreSquadAnalytics') || '[]');
+        analytics.push({
+            event: eventName,
+            timestamp: new Date().toISOString(),
+            properties: properties
+        });
+        
+        // Keep only last 100 events to manage storage
+        if (analytics.length > 100) {
+            analytics.splice(0, analytics.length - 100);
+        }
+        
+        localStorage.setItem('shoreSquadAnalytics', JSON.stringify(analytics));
+    }
+
+    // Performance monitoring
+    measurePerformance() {
+        if ('performance' in window) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    const perfData = performance.getEntriesByType('navigation')[0];
+                    const loadTime = perfData.loadEventEnd - perfData.loadEventStart;
+                    
+                    console.log(`Page load time: ${loadTime}ms`);
+                    
+                    if (loadTime > 3000) {
+                        console.warn('Slow page load detected. Consider optimizing resources.');
+                    }
+                }, 0);
+            });
+        }
+    }
+
+    // Quick actions menu
+    showQuickActionsMenu() {
+        const menu = document.createElement('div');
+        menu.className = 'quick-actions-menu';
+        menu.innerHTML = `
+            <div class="quick-action" onclick="app.joinEvent('Quick Join')">
+                <i class="fas fa-plus-circle"></i>
+                <span>Join Event</span>
+            </div>
+            <div class="quick-action" onclick="app.showModal('Create Event', 'Start organizing a new beach cleanup!')">
+                <i class="fas fa-calendar-plus"></i>
+                <span>Create Event</span>
+            </div>
+            <div class="quick-action" onclick="app.shareEvent('ShoreSquad App')">
+                <i class="fas fa-share-alt"></i>
+                <span>Share App</span>
+            </div>
+            <div class="quick-action" onclick="app.showModal('Weather Update', 'Current conditions are perfect for beach cleanup!')">
+                <i class="fas fa-cloud-sun"></i>
+                <span>Check Weather</span>
+            </div>
+        `;
+
+        // Add menu styles
+        const style = document.createElement('style');
+        style.textContent = `
+            .quick-actions-menu {
+                position: fixed;
+                bottom: 90px;
+                right: 20px;
+                background: var(--clean-white);
+                border-radius: var(--border-radius-xl);
+                box-shadow: var(--shadow-lg);
+                padding: var(--spacing-sm);
+                z-index: 1500;
+                opacity: 0;
+                transform: scale(0.8) translateY(20px);
+                animation: menuSlideIn 0.3s ease-out forwards;
+            }
+            
+            .quick-action {
+                display: flex;
+                align-items: center;
+                gap: var(--spacing-sm);
+                padding: var(--spacing-sm);
+                border-radius: var(--border-radius-md);
+                cursor: pointer;
+                transition: var(--transition-fast);
+                white-space: nowrap;
+                color: var(--text-dark);
+            }
+            
+            .quick-action:hover {
+                background-color: var(--off-white);
+                transform: translateX(-4px);
+            }
+            
+            .quick-action i {
+                color: var(--primary-blue);
+                width: 20px;
+                text-align: center;
+            }
+            
+            @keyframes menuSlideIn {
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+        document.body.appendChild(menu);
+
+        // Close menu when clicking outside
+        setTimeout(() => {
+            const closeMenu = (e) => {
+                if (!menu.contains(e.target) && e.target.id !== 'quickActionBtn') {
+                    menu.remove();
+                    style.remove();
+                    document.removeEventListener('click', closeMenu);
+                }
+            };
+            document.addEventListener('click', closeMenu);
+        }, 100);
+    }
+
+    // Enhanced initialization
+    enhancedInit() {
+        this.setupAccessibility();
+        this.measurePerformance();
+        this.setupPWA();
+        
+        // Initialize enhanced features
+        setTimeout(() => {
+            this.checkAchievements();
+            this.updateCrewStats();
+        }, 2000);
+        
+        // Track app launch
+        this.trackEvent('app_launched', {
+            userAgent: navigator.userAgent,
+            viewport: `${window.innerWidth}x${window.innerHeight}`,
+            timestamp: new Date().toISOString()
         });
     }
 }
