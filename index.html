@@ -43,13 +43,15 @@
             <div class="nav-container">
                 <div class="nav-logo">
                     <h1><i class="fas fa-water"></i> ShoreSquad</h1>
-                </div>
-                <ul class="nav-menu" id="nav-menu">
+                </div>                <ul class="nav-menu" id="nav-menu">
                     <li class="nav-item">
                         <a href="#home" class="nav-link">Home</a>
                     </li>
                     <li class="nav-item">
                         <a href="#events" class="nav-link">Events</a>
+                    </li>
+                    <li class="nav-item">
+                        <a href="#next-cleanup" class="nav-link">Next Cleanup</a>
                     </li>
                     <li class="nav-item">
                         <a href="#weather" class="nav-link">Weather</a>
@@ -138,6 +140,42 @@
             </div>
         </section>
 
+        <!-- Next Cleanup Location Section -->
+        <section id="next-cleanup" class="next-cleanup-section">
+            <div class="container">
+                <h2 class="section-title">Next Cleanup Location</h2>
+                <div class="cleanup-location-info">
+                    <div class="location-details">
+                        <h3><i class="fas fa-map-marker-alt"></i> Pasir Ris Beach</h3>
+                        <p class="location-description">
+                            Join us at Pasir Ris Beach for our next community cleanup! This beautiful coastal area needs our help to stay pristine for marine life and beachgoers alike.
+                        </p>
+                        <div class="location-stats">
+                            <span class="stat"><i class="fas fa-clock"></i> Next cleanup starts at coordinates</span>
+                            <span class="coordinates">1.381497, 103.955574</span>
+                        </div>
+                    </div>                    <div class="map-container">
+                        <iframe 
+                            src="https://maps.google.com/maps?q=1.381497,103.955574&hl=en&z=15&amp;output=embed"
+                            width="100%" 
+                            height="400" 
+                            style="border:0;" 
+                            allowfullscreen="" 
+                            loading="lazy" 
+                            referrerpolicy="no-referrer-when-downgrade"
+                            title="Next Cleanup Location - Pasir Ris Beach">
+                        </iframe>
+                        <div class="map-overlay">
+                            <div class="cleanup-marker">
+                                <i class="fas fa-map-pin"></i>
+                                <span>Next Cleanup</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
         <!-- Crew Section -->
         <section id="crew" class="crew-section">
             <div class="container">
@@ -215,12 +253,12 @@
                         <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
                         <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
                     </div>
-                </div>
-                <div class="footer-section">
+                </div>                <div class="footer-section">
                     <h4>Quick Links</h4>
                     <ul>
                         <li><a href="#home">Home</a></li>
                         <li><a href="#events">Events</a></li>
+                        <li><a href="#next-cleanup">Next Cleanup</a></li>
                         <li><a href="#weather">Weather</a></li>
                         <li><a href="#crew">My Crew</a></li>
                     </ul>
